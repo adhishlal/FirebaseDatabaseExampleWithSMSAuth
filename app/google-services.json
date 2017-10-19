@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1048569024726",
+    "firebase_url": "https://fir-databaseexample-f1719.firebaseio.com",
+    "project_id": "fir-databaseexample-f1719",
+    "storage_bucket": "fir-databaseexample-f1719.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1048569024726:android:7e1f1b725fff9209",
+        "android_client_info": {
+          "package_name": "com.example.adhish.firebasedatabaseexample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1048569024726-vtvekba340g6vibnnlduht3di1ruf3ag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADtd8vGsgBRqUeNFwu8L8zJvTWTPwm4tY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
