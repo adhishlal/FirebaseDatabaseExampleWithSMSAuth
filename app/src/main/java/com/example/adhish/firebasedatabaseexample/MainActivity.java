@@ -1,5 +1,6 @@
 package com.example.adhish.firebasedatabaseexample;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,11 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
@@ -56,14 +62,18 @@ public class MainActivity extends AppCompatActivity implements
 
     private TextView mStatusText;
     private TextView mDetailText;
+    private TextView tvValueFromServer;
 
     private EditText mPhoneNumberField;
     private EditText mVerificationField;
+    private EditText etData;
 
     private Button mStartButton;
     private Button mVerifyButton;
     private Button mResendButton;
     private Button mSignOutButton;
+    private Button btnSend;
+    private Button btnFireStore;
 
 
     @Override
@@ -81,21 +91,26 @@ public class MainActivity extends AppCompatActivity implements
         mSignedInViews = findViewById(R.id.signed_in_buttons);
 
         mStatusText = findViewById(R.id.status);
+        tvValueFromServer = findViewById(R.id.tvValueFromServer);
         mDetailText = findViewById(R.id.detail);
 
         mPhoneNumberField = findViewById(R.id.field_phone_number);
         mVerificationField = findViewById(R.id.field_verification_code);
+        etData = findViewById(R.id.etData);
 
         mStartButton = findViewById(R.id.button_start_verification);
         mVerifyButton = findViewById(R.id.button_verify_phone);
         mResendButton = findViewById(R.id.button_resend);
         mSignOutButton = findViewById(R.id.sign_out_button);
+        btnSend = findViewById(R.id.btnSend);
+        btnFireStore = findViewById(R.id.btnFireStore);
 
         // Assign click listeners
         mStartButton.setOnClickListener(this);
         mVerifyButton.setOnClickListener(this);
         mResendButton.setOnClickListener(this);
         mSignOutButton.setOnClickListener(this);
+
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -172,6 +187,14 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
         // [END phone_auth_callbacks]
+
+
+        btnFireStore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,FireStoreActivity.class));
+            }
+        });
     }
 
     @Override
@@ -293,6 +316,10 @@ public class MainActivity extends AppCompatActivity implements
         updateUI(uiState, null, cred);
     }
 
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference myRef = database.getReference("message");
+    DatabaseReference myNode = myRef.child("data");
+    String value = "";
     private void updateUI(int uiState, FirebaseUser user, PhoneAuthCredential cred) {
         switch (uiState) {
             case STATE_INITIALIZED:
@@ -355,6 +382,47 @@ public class MainActivity extends AppCompatActivity implements
 
             mStatusText.setText(R.string.signed_in);
             mDetailText.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+
+
+
+            btnSend.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    myRef.child("data").push().setValue(etData.getText().toString());
+
+
+                }
+            });
+
+
+
+            // Read from the database
+            myNode.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+
+
+                    value = "";
+
+                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        value += "\n"+ds.getValue(String.class);
+
+                        tvValueFromServer.setText(value);
+                    }
+//
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w(TAG, "Failed to read value.", error.toException());
+                }
+            });
+
         }
     }
 
